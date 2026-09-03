@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Football Tournament Spin Wheel</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-ball">⚽</span>
+    <h1>Tournament Spin Wheel</h1>
+  </div>
+  <button id="spinBothBtn" class="btn btn-primary btn-big">Spin Both Wheels</button>
+</header>
+
+<main class="arena">
+
+  <section class="wheel-column" data-wheel="A">
+    <div class="wheel-header">
+      <input type="text" class="wheel-title-input" id="titleA" maxlength="28" value="Wheel A">
+    </div>
+
+    <div class="wheel-outer">
+      <div class="pointer"></div>
+      <div class="wheel" id="wheelA"></div>
+      <div class="hub">⚽</div>
+    </div>
+
+    <button class="btn btn-spin" id="spinA">Spin Wheel A</button>
+
+    <div class="result" id="resultA" aria-live="polite"></div>
+
+    <div class="editor">
+      <h3>Names</h3>
+      <ul class="name-list" id="listA"></ul>
+      <form class="add-form" id="addFormA">
+        <input type="text" id="inputA" placeholder="Add a team name..." maxlength="24" autocomplete="off">
+        <button type="submit" class="btn btn-small">Add</button>
+      </form>
+      <button type="button" class="btn btn-link" id="resetA">Reset to default teams</button>
+    </div>
+  </section>
+
+  <section class="wheel-column" data-wheel="B">
+    <div class="wheel-header">
+      <input type="text" class="wheel-title-input" id="titleB" maxlength="28" value="Wheel B">
+    </div>
+
+    <div class="wheel-outer">
+      <div class="pointer"></div>
+      <div class="wheel" id="wheelB"></div>
+      <div class="hub">⚽</div>
+    </div>
+
+    <button class="btn btn-spin" id="spinB">Spin Wheel B</button>
+
+    <div class="result" id="resultB" aria-live="polite"></div>
+
+    <div class="editor">
+      <h3>Names</h3>
+      <ul class="name-list" id="listB"></ul>
+      <form class="add-form" id="addFormB">
+        <input type="text" id="inputB" placeholder="Add a team name..." maxlength="24" autocomplete="off">
+        <button type="submit" class="btn btn-small">Add</button>
+      </form>
+      <button type="button" class="btn btn-link" id="resetB">Reset to default teams</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <p>Made for matchday draws. Names are saved automatically in this browser. <span id="secretTap" class="secret-tap" title="">⚽</span></p>
+</footer>
+
+<!-- Hidden admin panel: not linked anywhere in the visible UI -->
+<div id="adminOverlay" class="admin-overlay hidden">
+  <div class="admin-panel">
+    <div class="admin-panel-head">
+      <h2>Admin Panel</h2>
+      <button class="btn btn-small btn-close" id="adminClose">Close</button>
+    </div>
+    <p class="admin-note">Choose the outcome for the next spin of each wheel. This selection is used once, then clears automatically. Nothing about this choice is shown anywhere in the public interface.</p>
+
+    <div class="admin-wheel-block">
+      <h3 id="adminTitleA">Wheel A</h3>
+      <select id="adminSelectA"></select>
+    </div>
+
+    <div class="admin-wheel-block">
+      <h3 id="adminTitleB">Wheel B</h3>
+      <select id="adminSelectB"></select>
+    </div>
+
+    <button class="btn btn-small btn-link" id="adminClearAll">Clear both selections</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
