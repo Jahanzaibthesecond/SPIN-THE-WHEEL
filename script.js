@@ -45,10 +45,13 @@ function saveState() {
 }
 
 /* Rotation (in degrees) currently applied to each wheel, and whether
-   it is mid-spin. Forced winner name is set by the admin panel. */
+   it is mid-spin. forcedQueue is an ordered list of names set by the
+   admin panel: each spin pops the first entry and lands on it. Once
+   the queue is empty, spins go back to genuinely random. This lives
+   only in memory (not localStorage) and resets on page reload. */
 const wheelRuntime = {
-  A: { rotation: 0, spinning: false, forcedWinner: null },
-  B: { rotation: 0, spinning: false, forcedWinner: null }
+  A: { rotation: 0, spinning: false, forcedQueue: [] },
+  B: { rotation: 0, spinning: false, forcedQueue: [] }
 };
 
 /* ---------------------------------------------------------------------
@@ -211,13 +214,19 @@ function renderAll() {
    about a "forced" spin versus a genuinely random one.
    ------------------------------------------------------------------- */
 
+// Pops the next queued outcome (if any) and resolves it to a slice
+// index. Matching is case-insensitive and ignores extra spaces so a
+// typo in capitalization doesn't silently fall back to random.
 function pickTargetIndex(key) {
   const names = state[key].names;
   const n = names.length;
-  const forced = wheelRuntime[key].forcedWinner;
+  const queue = wheelRuntime[key].forcedQueue;
 
-  if (forced) {
-    const idx = names.indexOf(forced);
+  if (queue.length > 0) {
+    const forcedName = queue.shift().trim();
+    const idx = names.findIndex(
+      (name) => name.toLowerCase() === forcedName.toLowerCase()
+    );
     if (idx !== -1) return idx;
   }
   return Math.floor(Math.random() * n);
@@ -241,9 +250,10 @@ function spinWheel(key, onDone) {
   const sliceAngle = 360 / n;
   const targetIndex = pickTargetIndex(key);
 
-  // Note: a forced pick from the admin panel is NOT cleared here.
-  // It stays in effect for every future spin until the admin panel
-  // is used to change it back to "Random (fair)" or a different name.
+  // pickTargetIndex() already consumed (shifted) the next queued
+  // outcome, if there was one -- refresh the admin panel's preview
+  // in case it's open, so it reflects what's left in the queue.
+  refreshAdminOptions();
 
   const sliceCenter = targetIndex * sliceAngle + sliceAngle / 2;
 
@@ -345,39 +355,49 @@ function closeAdmin() {
 
 function refreshAdminOptions() {
   ["A", "B"].forEach((key) => {
-    const select = document.getElementById("adminSelect" + key);
-    if (!select) return;
-    const currentValue = wheelRuntime[key].forcedWinner || "__random__";
+    const textarea = document.getElementById("adminQueue" + key);
+    if (!textarea) return;
+    const queue = wheelRuntime[key].forcedQueue;
 
-    select.innerHTML = "";
-    const randomOpt = document.createElement("option");
-    randomOpt.value = "__random__";
-    randomOpt.textContent = "Random (fair)";
-    select.appendChild(randomOpt);
+    // Don't stomp on text the admin is actively typing.
+    if (document.activeElement !== textarea) {
+      textarea.value = queue.join("\n");
+    }
 
-    state[key].names.forEach((name) => {
-      const opt = document.createElement("option");
-      opt.value = name;
-      opt.textContent = name;
-      select.appendChild(opt);
-    });
+    const preview = document.getElementById("adminPreview" + key);
+    preview.textContent = queue.length
+      ? `Queued (in order): ${queue.join(" → ")}`
+      : "Currently: random (fair) spins";
 
-    select.value = currentValue;
     document.getElementById("adminTitle" + key).textContent = state[key].title;
   });
 }
 
+function applyQueue(key) {
+  const textarea = document.getElementById("adminQueue" + key);
+  const lines = textarea.value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  wheelRuntime[key].forcedQueue = lines;
+  refreshAdminOptions();
+}
+
+function clearQueue(key) {
+  wheelRuntime[key].forcedQueue = [];
+  refreshAdminOptions();
+}
+
 function wireAdminPanel() {
-  document.getElementById("adminSelectA").addEventListener("change", (e) => {
-    wheelRuntime.A.forcedWinner = e.target.value === "__random__" ? null : e.target.value;
+  document.getElementById("adminSetA").addEventListener("click", () => applyQueue("A"));
+  document.getElementById("adminSetB").addEventListener("click", () => applyQueue("B"));
+  document.getElementById("adminClearA").addEventListener("click", () => {
+    document.getElementById("adminQueueA").value = "";
+    clearQueue("A");
   });
-  document.getElementById("adminSelectB").addEventListener("change", (e) => {
-    wheelRuntime.B.forcedWinner = e.target.value === "__random__" ? null : e.target.value;
-  });
-  document.getElementById("adminClearAll").addEventListener("click", () => {
-    wheelRuntime.A.forcedWinner = null;
-    wheelRuntime.B.forcedWinner = null;
-    refreshAdminOptions();
+  document.getElementById("adminClearB").addEventListener("click", () => {
+    document.getElementById("adminQueueB").value = "";
+    clearQueue("B");
   });
   document.getElementById("adminClose").addEventListener("click", closeAdmin);
   document.getElementById("adminOverlay").addEventListener("click", (e) => {

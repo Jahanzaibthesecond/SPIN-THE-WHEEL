@@ -502,14 +502,31 @@ header, main, footer {
   color: var(--text);
 }
 
-.admin-wheel-block select {
+.admin-wheel-block textarea {
   width: 100%;
   padding: 8px 10px;
   border-radius: 8px;
   background: #241a0d;
   color: var(--text);
   border: 1px solid rgba(230, 194, 92, 0.35);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.admin-preview {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.admin-row-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 /* ===================== Responsive ===================== */

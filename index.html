@@ -84,19 +84,27 @@
       <h2>Admin Panel</h2>
       <button class="btn btn-small btn-close" id="adminClose">Close</button>
     </div>
-    <p class="admin-note">Choose the outcome for each wheel. Once set, that name will win every spin until you change it back to "Random (fair)" here. Nothing about this choice is shown anywhere in the public interface.</p>
+    <p class="admin-note">Type the winners in order, one per line — the first line is what the <em>next</em> spin lands on, the second line the spin after that, and so on. Click "Set order" once and every future spin (including Spin Both) automatically uses the next line. Nothing about this is shown anywhere in the public interface. Leave blank + Set order for fair random spins.</p>
 
     <div class="admin-wheel-block">
       <h3 id="adminTitleA">Wheel A</h3>
-      <select id="adminSelectA"></select>
+      <textarea id="adminQueueA" rows="4" placeholder="One name per line, in order...&#10;Real Madrid&#10;AC Milan&#10;PSG"></textarea>
+      <div class="admin-preview" id="adminPreviewA"></div>
+      <div class="admin-row-buttons">
+        <button type="button" class="btn btn-small" id="adminSetA">Set order</button>
+        <button type="button" class="btn btn-small btn-link" id="adminClearA">Clear (random)</button>
+      </div>
     </div>
 
     <div class="admin-wheel-block">
       <h3 id="adminTitleB">Wheel B</h3>
-      <select id="adminSelectB"></select>
+      <textarea id="adminQueueB" rows="4" placeholder="One name per line, in order...&#10;Real Madrid&#10;AC Milan&#10;PSG"></textarea>
+      <div class="admin-preview" id="adminPreviewB"></div>
+      <div class="admin-row-buttons">
+        <button type="button" class="btn btn-small" id="adminSetB">Set order</button>
+        <button type="button" class="btn btn-small btn-link" id="adminClearB">Clear (random)</button>
+      </div>
     </div>
-
-    <button class="btn btn-small btn-link" id="adminClearAll">Clear both selections</button>
   </div>
 </div>
 
