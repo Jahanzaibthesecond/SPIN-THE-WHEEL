@@ -241,9 +241,9 @@ function spinWheel(key, onDone) {
   const sliceAngle = 360 / n;
   const targetIndex = pickTargetIndex(key);
 
-  // Consume the forced pick -- it only applies to this one spin.
-  runtime.forcedWinner = null;
-  refreshAdminOptions();
+  // Note: a forced pick from the admin panel is NOT cleared here.
+  // It stays in effect for every future spin until the admin panel
+  // is used to change it back to "Random (fair)" or a different name.
 
   const sliceCenter = targetIndex * sliceAngle + sliceAngle / 2;
 
